@@ -38,7 +38,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "nodemon src/server/votes.js"
+    "start": "nodemon 1/src/server/votes.js"
   },
   "author": "",
   "license": "ISC"

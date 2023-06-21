@@ -44,7 +44,7 @@ webserver.get('/stats', (req, res) => {
 
 webserver.get('/vote', (req, res) => { 
 	res.send(
-		`<form action="http://localhost:7380/makeVote" method="post" target=example>
+		`<form action="http://178.172.195.18:7380/makeVote" method="post" target=example>
 			<input type="radio" name="vote" value="TRAMP" id="TRAMP">
 			<label for="TRAMP">TRAMP</label>
 			<input type="radio" name="vote" value="BIDEN" id="BIDEN">

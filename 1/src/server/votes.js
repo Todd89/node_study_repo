@@ -1,7 +1,7 @@
 const express = require('express');
+const fetch = require('node-fetch');
 const fs = require('fs');
 const path = require('path');
-const os = require('os');
 
 const webserver = express();
 
@@ -17,11 +17,21 @@ const getVoteStatistic = () => {
 	)
 }
 
-const updateStatistic = (vote) => {
+const setNewStatistic = (vote) => {
 	const staticDataParsed = getVoteStatistic();
 
 	staticDataParsed[vote] += 1;
+	
+	fetch("http://localhost:7380/vote", {
+		method: "POST",
+		headers: {
+		  "Content-Type": "application/json",
+		},
+		body: JSON.stringify(staticDataParsed),
+	});
+}
 
+const updateStatistic = (staticDataParsed) => {
 	const newStatistic = {...staticDataParsed};
 	const newStatisticStringify = JSON.stringify(newStatistic);
 
@@ -34,34 +44,42 @@ webserver.get('/variants', (req, res) => {
     res.send(`Variant_1: ${Object.keys(staticDataParsed)[0]}, Variant_2 ${Object.keys(staticDataParsed)[1]}`)
 })
 
-
 webserver.get('/stats', (req, res) => { 
 	const staticDataParsed = getVoteStatistic();
 
     res.send(staticDataParsed)
 })
 
-
-webserver.get('/vote', (req, res) => { 
+webserver.get('/page', (req, res) => {
 	res.send(
-		`<form action="http://178.172.195.18:7380/makeVote" method="post" target=example>
+		`<form onsubmit="return false;">
 			<input type="radio" name="vote" value="TRAMP" id="TRAMP">
 			<label for="TRAMP">TRAMP</label>
 			<input type="radio" name="vote" value="BIDEN" id="BIDEN">
 			<label for="BIDEN">BIDEN</label>
-			<button type="submit">VOTE</button>
-		</form>`
+			<button onclick="${setNewStatistic('TRAMP')}">VOTE FOR TRAMP</button>
+			<button onclick="${setNewStatistic("BIDEN")}">VOTE FOR BIDEN</button>
+		</form>
+		<div>
+			<div>
+				<p>TRAMP: ${getVoteStatistic().TRAMP}</p>
+				<p>BIDEN: ${getVoteStatistic().BIDEN}</p>
+			</div>
+		</div>
+		`
 	)
 })
 
-webserver.post('/makeVote', (req, res) => { 
-    const vote = req.body.vote;
+webserver.post('/vote', (req, res) => { 
+	console.log(req.body);
 
-	updateStatistic(vote);
+	if(Object.keys(req.body).length) {
+		const newStatisticString = JSON.parse(req.body);
+		updateStatistic(newStatisticString);
+	}
+	// res.send("");
 
-	const staticDataParsed = getVoteStatistic();
-
-	res.send(staticDataParsed)
+	fetch("http://localhost:7380/page");
 })
 
 webserver.listen(port,()=>{

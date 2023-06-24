@@ -6,6 +6,7 @@ const path = require('path');
 const webserver = express();
 
 webserver.use(express.urlencoded({extended:true}));
+webserver.use(express.json());
 
 const port = 7380;
 
@@ -20,9 +21,9 @@ const getVoteStatistic = () => {
 const setNewStatistic = (vote) => {
 	const staticDataParsed = getVoteStatistic();
 
-	staticDataParsed[vote] += 1;
+	staticDataParsed[vote] = +staticDataParsed[vote] + 1;
 	
-	fetch("http://localhost:7380/vote", {
+	fetch("http://178.172.195.18:7380/vote", {
 		method: "POST",
 		headers: {
 		  "Content-Type": "application/json",
@@ -34,6 +35,8 @@ const setNewStatistic = (vote) => {
 const updateStatistic = (staticDataParsed) => {
 	const newStatistic = {...staticDataParsed};
 	const newStatisticStringify = JSON.stringify(newStatistic);
+
+	console.log(newStatisticStringify)
 
 	fs.writeFileSync(staticDataPath, newStatisticStringify)
 }
@@ -52,14 +55,14 @@ webserver.get('/stats', (req, res) => {
 
 webserver.get('/page', (req, res) => {
 	res.send(
-		`<form onsubmit="return false;">
+		`<div>
 			<input type="radio" name="vote" value="TRAMP" id="TRAMP">
 			<label for="TRAMP">TRAMP</label>
 			<input type="radio" name="vote" value="BIDEN" id="BIDEN">
 			<label for="BIDEN">BIDEN</label>
 			<button onclick="${setNewStatistic('TRAMP')}">VOTE FOR TRAMP</button>
-			<button onclick="${setNewStatistic("BIDEN")}">VOTE FOR BIDEN</button>
-		</form>
+			<button onclick="${setNewStatistic('BIDEN')}">VOTE FOR BIDEN</button>
+		</div>
 		<div>
 			<div>
 				<p>TRAMP: ${getVoteStatistic().TRAMP}</p>
@@ -71,15 +74,12 @@ webserver.get('/page', (req, res) => {
 })
 
 webserver.post('/vote', (req, res) => { 
-	console.log(req.body);
-
 	if(Object.keys(req.body).length) {
-		const newStatisticString = JSON.parse(req.body);
+		const newStatisticString = req.body;
 		updateStatistic(newStatisticString);
 	}
-	// res.send("");
 
-	fetch("http://localhost:7380/page");
+	fetch("http://178.172.195.18:7380/page");
 })
 
 webserver.listen(port,()=>{

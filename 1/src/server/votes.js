@@ -11,6 +11,13 @@ webserver.use(express.json());
 const port = 7380;
 
 const staticDataPath = path.join(__dirname, 'votesStatistic.json');
+const variantsDataPath = path.join(__dirname, 'votesVariants.json');
+
+const getVoteVariants = () => {
+	return JSON.parse(
+		fs.readFileSync(variantsDataPath)
+	)
+}
 
 const getVoteStatistic = () => {
 	return JSON.parse(
@@ -36,15 +43,13 @@ const updateStatistic = (staticDataParsed) => {
 	const newStatistic = {...staticDataParsed};
 	const newStatisticStringify = JSON.stringify(newStatistic);
 
-	console.log(newStatisticStringify)
-
 	fs.writeFileSync(staticDataPath, newStatisticStringify)
 }
 
 webserver.get('/variants', (req, res) => {
-	const staticDataParsed = getVoteStatistic();
+	const staticVariantsParsed = getVoteVariants();
 
-    res.send(`Variant_1: ${Object.keys(staticDataParsed)[0]}, Variant_2 ${Object.keys(staticDataParsed)[1]}`)
+    res.send(staticVariantsParsed)
 })
 
 webserver.get('/stats', (req, res) => { 

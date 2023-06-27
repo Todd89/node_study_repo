@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Page</title>
+</head>
+<body>
+	<div>
+		<input type="radio" name="vote" value="TRAMP" id="TRAMP">
+		<label for="TRAMP">TRAMP</label>
+		<input type="radio" name="vote" value="BIDEN" id="BIDEN">
+		<label for="BIDEN">BIDEN</label>
+		<div id="vote_buttons">
+
+		</div>
+		<!-- <button onclick="${setNewStatistic('TRAMP')}">VOTE FOR TRAMP</button>
+		<button onclick="${setNewStatistic('BIDEN')}">VOTE FOR BIDEN</button> -->
+	</div>
+	<div>
+		<div>
+			<p>TRAMP: ${getVoteStatistic().TRAMP}</p>
+			<p>BIDEN: ${getVoteStatistic().BIDEN}</p>
+		</div>
+	</div>
+	<script defer>
+		async function getVotesButtons () {
+			const res = await fetch('http://localhost:7380/variants');
+			const votesButtons = await res.json();
+
+			const voteButtonElement = document.createElement('button');
+
+			const votesButtonsElement = document.getElementById('vote_buttons');
+
+			votesButtons.forEach(el => {
+				const voteName = el.label;
+
+				const voteButtonElement = document.createElement('button');
+				voteButtonElement.innerText = voteName;
+				votesButtonsElement.appendChild(voteButtonElement);
+
+				voteButtonElement.onclick = function() {
+					fetch("http://localhost:7380/vote", {
+						method: "POST",
+						headers: {
+						"Content-Type": "application/json",
+						},
+						body: JSON.stringify({voteName}),
+					});
+				}
+			});
+		}
+		getVotesButtons()
+	</script>
+</body>
+</html>

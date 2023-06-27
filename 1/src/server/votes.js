@@ -12,6 +12,7 @@ const port = 7380;
 
 const staticDataPath = path.join(__dirname, 'votesStatistic.json');
 const variantsDataPath = path.join(__dirname, 'votesVariants.json');
+const pageWithVotesButtonsPath = path.join(__dirname, 'page.html');
 
 const getVoteVariants = () => {
 	return JSON.parse(
@@ -30,13 +31,6 @@ const setNewStatistic = (vote) => {
 
 	staticDataParsed[vote] = +staticDataParsed[vote] + 1;
 	
-	fetch("http://178.172.195.18:7380/vote", {
-		method: "POST",
-		headers: {
-		  "Content-Type": "application/json",
-		},
-		body: JSON.stringify(staticDataParsed),
-	});
 }
 
 const updateStatistic = (staticDataParsed) => {
@@ -59,32 +53,15 @@ webserver.get('/stats', (req, res) => {
 })
 
 webserver.get('/page', (req, res) => {
-	res.send(
-		`<div>
-			<input type="radio" name="vote" value="TRAMP" id="TRAMP">
-			<label for="TRAMP">TRAMP</label>
-			<input type="radio" name="vote" value="BIDEN" id="BIDEN">
-			<label for="BIDEN">BIDEN</label>
-			<button onclick="${setNewStatistic('TRAMP')}">VOTE FOR TRAMP</button>
-			<button onclick="${setNewStatistic('BIDEN')}">VOTE FOR BIDEN</button>
-		</div>
-		<div>
-			<div>
-				<p>TRAMP: ${getVoteStatistic().TRAMP}</p>
-				<p>BIDEN: ${getVoteStatistic().BIDEN}</p>
-			</div>
-		</div>
-		`
-	)
+	res.sendFile(pageWithVotesButtonsPath)
 })
 
-webserver.post('/vote', (req, res) => { 
-	if(Object.keys(req.body).length) {
-		const newStatisticString = req.body;
-		updateStatistic(newStatisticString);
-	}
+webserver.post('/vote', (req, res) => {
+	const {voteName} = req.body;
 
-	fetch("http://178.172.195.18:7380/page");
+	updateStatistic(voteName);
+
+	console.log(getVoteStatistic(), 'XXX')
 })
 
 webserver.listen(port,()=>{

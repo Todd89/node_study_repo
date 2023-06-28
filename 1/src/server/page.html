@@ -8,25 +8,16 @@
 </head>
 <body>
 	<div>
-		<input type="radio" name="vote" value="TRAMP" id="TRAMP">
-		<label for="TRAMP">TRAMP</label>
-		<input type="radio" name="vote" value="BIDEN" id="BIDEN">
-		<label for="BIDEN">BIDEN</label>
+		<p>MAKE YOUR VOTE</p>
 		<div id="vote_buttons">
-
-		</div>
-		<!-- <button onclick="${setNewStatistic('TRAMP')}">VOTE FOR TRAMP</button>
-		<button onclick="${setNewStatistic('BIDEN')}">VOTE FOR BIDEN</button> -->
+	</div>
 	</div>
 	<div>
-		<div>
-			<p>TRAMP: ${getVoteStatistic().TRAMP}</p>
-			<p>BIDEN: ${getVoteStatistic().BIDEN}</p>
-		</div>
+		<div id="vote_statistic"></div>
 	</div>
 	<script defer>
 		async function getVotesButtons () {
-			const res = await fetch('http://localhost:7380/variants');
+			const res = await fetch('http://178.172.195.18:7380/variants');
 			const votesButtons = await res.json();
 
 			const voteButtonElement = document.createElement('button');
@@ -40,17 +31,26 @@
 				voteButtonElement.innerText = voteName;
 				votesButtonsElement.appendChild(voteButtonElement);
 
-				voteButtonElement.onclick = function() {
-					fetch("http://localhost:7380/vote", {
+				voteButtonElement.onclick = async function() {
+					const res = await fetch("http://178.172.195.18:7380/vote", {
 						method: "POST",
 						headers: {
 						"Content-Type": "application/json",
 						},
 						body: JSON.stringify({voteName}),
 					});
+
+					const result = await res.json();
+					
+					const votesStatisticElement = document.getElementById('vote_statistic');
+
+					votesStatisticElement.innerHTML = `
+						<div>TRAMP: ${result.TRAMP} : BIDEN: ${result.BIDEN}</div>
+					`
 				}
 			});
 		}
+
 		getVotesButtons()
 	</script>
 </body>

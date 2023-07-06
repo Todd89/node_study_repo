@@ -51,6 +51,36 @@ webserver.get('/page', (req, res) => {
 	res.sendFile(pageWithVotesButtonsPath)
 })
 
+webserver.get('/getStats', (req, res) => {
+	const voteStatistic = getVoteStatistic();
+
+	const requestAccept = req.headers.accept;
+
+	if (requestAccept === "application/json" ) {
+        res.setHeader("Content-Type", "application/json");
+        res.setHeader("Content-Disposition", " attachment");
+        res.send(JSON.stringify(voteStatistic));
+    } else if ( requestAccept === "application/xml" ) {
+		res.setHeader("Content-Type", "application/xml");
+		res.setHeader("Content-Disposition", " attachment");
+
+		const xmlResponse = `
+			<busket><TRAMP>${voteStatistic.TRAMP}</TRAMP><BIDEN>${voteStatistic.BIDEN}</BIDEN></busket>
+		`
+		res.send(xmlResponse);
+    } else if (requestAccept === "text/html" ) {
+		res.setHeader("Content-Disposition", "attachment");
+		res.setHeader("Content-Type", "text/html");
+
+		const htmlResponse = `
+			<div>TRAMP: ${voteStatistic.TRAMP}</div>
+			<div>BIDEN: ${voteStatistic.BIDEN}</div>
+		`
+		res.send(htmlResponse);
+    } else 
+		res.send('Hello')
+})
+
 webserver.post('/vote', (req, res) => {
 	const {voteName} = req.body;
 

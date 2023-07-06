@@ -15,6 +15,11 @@
 	<div>
 		<div id="vote_statistic"></div>
 	</div>
+		<div id="get_statistic">
+			<button onclick="getXMLStatistic()">GET XML STATISTIC</button>
+			<button onclick="getJSONStatistic()"> GET JSON STATISTIC</button>
+			<button onclick="getHTMLStatistic()">GET HTML STATISTIC</button>
+		</div>
 	<script defer>
 		async function getVotesButtons () {
 			const res = await fetch('http://178.172.195.18:7380/variants');
@@ -52,6 +57,68 @@
 		}
 
 		getVotesButtons()
+
+		async function getXMLStatistic () {
+			const res = await fetch("http://178.172.195.18:7380/getStats", {
+				method: "GET",
+				headers: {
+					"Accept": "application/xml",
+				}
+			});
+
+			const data = await res.blob();
+			
+			const getStatisticBlock = document.getElementById('get_statistic');
+       		const anchor = document.createElement('a');
+			getStatisticBlock.appendChild(anchor);
+
+        	anchor.href = window.URL.createObjectURL(new Blob([data]));
+        	anchor.download = 'stats.xml';
+        	anchor.click();
+			anchor.remove()
+		}
+
+		async function getJSONStatistic () {
+			const res = await fetch("http://178.172.195.18:7380/getStats", {
+				method: "GET",
+				headers: {
+					"Accept": "application/json",
+				}
+			});
+
+			const data = await res.json();
+			
+			const getStatisticBlock = document.getElementById('get_statistic');
+       		const anchor = document.createElement('a');
+			getStatisticBlock.appendChild(anchor);
+
+			const jsonFormatData = JSON.stringify(data);
+
+        	anchor.href = window.URL.createObjectURL(new Blob([jsonFormatData]));
+        	anchor.download = 'stats.json';
+        	anchor.click();
+			anchor.remove()
+		}
+
+		async function getHTMLStatistic () {
+			const res = await fetch("http://178.172.195.18:7380/getStats", {
+				method: "GET",
+				headers: {
+					"Accept": "text/html",
+				}
+			});
+
+			const data = await res.text();
+			
+			const getStatisticBlock = document.getElementById('get_statistic');
+       		const anchor = document.createElement('a');
+			getStatisticBlock.appendChild(anchor);
+
+        	anchor.href = window.URL.createObjectURL(new Blob([data]));
+        	anchor.download = 'stats.html';
+        	anchor.click();
+			anchor.remove()
+		}
 	</script>
 </body>
 </html>

@@ -31,26 +31,29 @@
 
 			votesButtons.forEach(el => {
 				const voteName = el.label;
+				const candidateId = el.id;
 
 				const voteButtonElement = document.createElement('button');
 				voteButtonElement.innerText = voteName;
 				votesButtonsElement.appendChild(voteButtonElement);
 
 				voteButtonElement.onclick = async function() {
-					const res = await fetch("http://178.172.195.18:7380/vote", {
+					await fetch("http://178.172.195.18:7380/vote", {
 						method: "POST",
 						headers: {
 						"Content-Type": "application/json",
 						},
-						body: JSON.stringify({voteName}),
+						body: JSON.stringify({id: candidateId}),
 					});
 
+					const res = await fetch("http://178.172.195.18:7380/stats");
+
 					const result = await res.json();
-					
+
 					const votesStatisticElement = document.getElementById('vote_statistic');
 
 					votesStatisticElement.innerHTML = `
-						<div>TRAMP: ${result.TRAMP} : BIDEN: ${result.BIDEN}</div>
+						<div>TRAMP: ${result[1].votes} : BIDEN: ${result[2].votes}</div>
 					`
 				}
 			});

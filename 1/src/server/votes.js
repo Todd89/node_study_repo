@@ -15,30 +15,29 @@ const variantsDataPath = path.join(__dirname, 'votesVariants.json');
 const pageWithVotesButtonsPath = path.join(__dirname, 'page.html');
 
 const getVoteVariants = () => {
-	const variants = fs.readFileSync(variantsDataPath);
-
-	return variants;
+	return JSON.parse(
+		fs.readFileSync(variantsDataPath, { encoding: 'utf8', flag: 'r' })
+	)
 }
 
 const getVoteStatistic = () => {
 	return JSON.parse(
-		fs.readFileSync(staticDataPath)
+		fs.readFileSync(staticDataPath, { encoding: 'utf8', flag: 'r' })
 	)
 }
 
-
-const updateStatistic = (voteName) => {
+const updateStatistic = (id) => {
 	const staticDataParsed = getVoteStatistic();
 
-	staticDataParsed[voteName] = +staticDataParsed[voteName] + 1;
+	staticDataParsed[id]['votes'] = +staticDataParsed[id]['votes'] + 1;
 
 	fs.writeFileSync(staticDataPath, JSON.stringify(staticDataParsed))
 }
 
 webserver.get('/variants', (req, res) => {
-	const staticVariantsParsed = getVoteVariants();
+	const votesVariantsParsed = getVoteVariants();
 
-    res.send(staticVariantsParsed)
+    res.send(votesVariantsParsed)
 })
 
 webserver.get('/stats', (req, res) => { 
@@ -82,13 +81,11 @@ webserver.get('/getStats', (req, res) => {
 })
 
 webserver.post('/vote', (req, res) => {
-	const {voteName} = req.body;
+	const {id} = req.body;
 
-	updateStatistic(voteName);
+	updateStatistic(id);
 
-	const staticDataParsed = getVoteStatistic();
-
-	res.send(staticDataParsed);
+	res.send('')
 })
 
 webserver.listen(port,()=>{

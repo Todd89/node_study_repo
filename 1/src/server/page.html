@@ -17,7 +17,7 @@
 	</div>
 		<div id="get_statistic">
 			<button onclick="getXMLStatistic()">GET XML STATISTIC</button>
-			<button onclick="getJSONStatistic()"> GET JSON STATISTIC</button>
+			<button onclick="getJSONStatistic()">GET JSON STATISTIC</button>
 			<button onclick="getHTMLStatistic()">GET HTML STATISTIC</button>
 		</div>
 	<script defer>
@@ -69,7 +69,7 @@
 				}
 			});
 
-			const data = await res.blob();
+			const data = await res.text();
 			
 			const getStatisticBlock = document.getElementById('get_statistic');
        		const anchor = document.createElement('a');

@@ -64,7 +64,7 @@ webserver.get('/getStats', (req, res) => {
 		res.setHeader("Content-Disposition", " attachment");
 
 		const xmlResponse = `
-			<busket><TRAMP>${voteStatistic.TRAMP}</TRAMP><BIDEN>${voteStatistic.BIDEN}</BIDEN></busket>
+			<busket><TRAMP>${voteStatistic[1]['votes']}}</TRAMP><BIDEN>${voteStatistic[2]['votes']}}</BIDEN></busket>
 		`
 		res.send(xmlResponse);
     } else if (requestAccept === "text/html" ) {
@@ -72,8 +72,8 @@ webserver.get('/getStats', (req, res) => {
 		res.setHeader("Content-Type", "text/html");
 
 		const htmlResponse = `
-			<div>TRAMP: ${voteStatistic.TRAMP}</div>
-			<div>BIDEN: ${voteStatistic.BIDEN}</div>
+			<div>TRAMP: ${voteStatistic[1]['votes']}</div>
+			<div>BIDEN: ${voteStatistic[2]['votes']}</div>
 		`
 		res.send(htmlResponse);
     } else 

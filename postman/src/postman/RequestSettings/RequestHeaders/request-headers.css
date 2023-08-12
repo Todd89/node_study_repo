@@ -1,0 +1,27 @@
+.header {
+	display: flex;
+	justify-content: space-around;
+	margin-top: 10px;
+}
+
+.request-header-buttons {
+	display: flex;
+}
+
+.delete-header {
+	color: red;
+	cursor: pointer;
+}
+
+.submit-info {
+	padding: 20px 0 0  20px;
+}
+
+.request-header-button {
+	width: 100px;
+	margin: 20px 0 0 10px;
+	text-align: center;
+	border: 1px solid black;
+	background-color: rgba(123, 50, 219, 0.3);
+	cursor: pointer;
+}

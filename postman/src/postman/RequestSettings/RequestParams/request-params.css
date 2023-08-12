@@ -1,0 +1,26 @@
+.param {
+	display: flex;
+	justify-content: space-around;
+	margin-top: 10px;
+}
+
+.delete-param {
+	color: red;
+	cursor: pointer;
+}
+
+.submit-params {
+	margin: 20px 0 0 10px;
+	color: green;
+	cursor: pointer;
+}
+
+
+.request-params-button {
+	width: 100px;
+	margin: 20px 0 0 10px;
+	text-align: center;
+	border: 1px solid black;
+	background-color: rgba(50, 219, 110, 1);
+	cursor: pointer;
+}

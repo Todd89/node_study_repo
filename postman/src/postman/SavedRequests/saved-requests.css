@@ -1,0 +1,30 @@
+.request-list {
+	width: 40%;
+	padding-left: 8px;
+	background-color: rgba(3, 255, 230, 0.1);
+}
+
+.request-block {
+	width: 90%;
+	border: 1px solid black;
+	border-radius: 8px;
+	background-color:rgba(87, 181, 171, 0.953);
+	cursor: pointer;
+}
+
+.request-block:not(:first-child) {
+	margin-top: 5px;
+}
+
+.request-param {
+	display: flex;
+}
+
+.request-method,
+.request-url {
+	margin-left: 10px;
+}
+
+.request-block-name {
+	font-weight: 700;
+}

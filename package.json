@@ -40,7 +40,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "nodemon 1/src/server/votes.js"
+    "start-votes": "nodemon 1/src/server/votes.js",
+    "start-postman": "nodemon 1/src/server/votes.js"
   },
   "author": "",
   "license": "ISC"

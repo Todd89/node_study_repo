@@ -130,9 +130,9 @@ app.post("/sendRequest", (req, resToPage) => {
 		}
 
 	fetch(finalUrl, options)
-	.then(res => {
+	.then(async res => {
 			const resHeaders = Array.from(res.headers);
-			const { body } = res;
+			const body = await res.text();
 
 			const gettingResponseData = {
 				status: res.status,

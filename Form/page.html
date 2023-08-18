@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Page</title>
+</head>
+<body style="height: 100vh; background-color: #a7f2bb; display: flex; justify-content: center; align-items: center;">
+	<div style="display: flex; flex-direction: column; width: 100px;">
+		<form method="post" action="/data" novalidate>
+			<input type="text" id="name" style="margin-bottom: 10px" placeholder="name" name='name'>
+			<input type="text" id="pass" style="margin-bottom: 10px" placeholder="password" name='pass'>
+			<input type="email" id="email" placeholder="email" name='email'>
+			<button type="submit">Submit</button>
+		</form>
+	</div>
+	<script defer>
+		function getSavedData () {
+			fetch('http://localhost:7380/savedData', {
+				method: 'POST'
+			})
+			.then(res => {
+				const data = res.json();
+	
+				return data;
+			})
+			.then(data => {
+				if (data.name !== undefined && (!data.name.length || !data.pass.length || !data.email.length))
+					alert('Bad values');
+
+				document.getElementById('name').value = data.name ? data.name : '';
+				document.getElementById('pass').value = data.pass ? data.pass : '';
+				document.getElementById('email').value = data.email ? data.email : '';
+			})
+		}
+
+		getSavedData();
+	</script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Page</title>
+</head>
+<body style="height: 100vh">
+	<div>
+		<p>NAME:</p>
+		<div id="name"></div>
+		<p>PASS:</p>
+		<div id="pass"></div>
+		<p>EMAIL:</p>
+		<div id="email"></div>
+	</div>
+	<script defer>
+		const search = window.location.search;
+
+		const searchParams = new URLSearchParams(search);
+
+		document.getElementById('name').innerText = searchParams.get('name');
+		document.getElementById('pass').innerText = searchParams.get('pass');
+		document.getElementById('email').innerText = searchParams.get('email');
+	</script>
+</body>
+</html>

@@ -7,8 +7,6 @@ const isResponse = !!Object.keys(responseInfoData).length;
 const responseHeaders = responseInfoData.headers;
 const responseBody = responseInfoData.body;
 
-console.log(responseBody)
-
 return (
 	<>
 		{isResponse

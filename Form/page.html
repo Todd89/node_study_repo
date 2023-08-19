@@ -8,7 +8,7 @@
 </head>
 <body style="height: 100vh; background-color: #a7f2bb; display: flex; justify-content: center; align-items: center;">
 	<div style="display: flex; flex-direction: column; width: 100px;">
-		<form method="post" action="/data" novalidate>
+		<form method="post" action="" onsubmit="onSubmit(); return false" novalidate>
 			<input type="text" id="name" style="margin-bottom: 10px" placeholder="name" name='name'>
 			<input type="text" id="pass" style="margin-bottom: 10px" placeholder="password" name='pass'>
 			<input type="email" id="email" placeholder="email" name='email'>
@@ -16,26 +16,32 @@
 		</form>
 	</div>
 	<script defer>
-		function getSavedData () {
-			fetch('http://178.172.195.18:7380/savedData', {
-				method: 'POST'
-			})
-			.then(res => {
-				const data = res.json();
-	
-				return data;
-			})
-			.then(data => {
-				if (data.name !== undefined && (!data.name.length || !data.pass.length || !data.email.length))
-					alert('Bad values');
+		function onSubmit() {
+			const nameInput = document.getElementById('name');
+			const passInput = document.getElementById('pass');
+			const emailInput = document.getElementById('email');
 
-				document.getElementById('name').value = data.name ? data.name : '';
-				document.getElementById('pass').value = data.pass ? data.pass : '';
-				document.getElementById('email').value = data.email ? data.email : '';
+			fetch('http://localhost:7380/page', {
+				method: 'POST',
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					name: nameInput.value,
+					pass: passInput.value,
+					email: emailInput.value,
+				})
+			})
+			.then(res => res.json())
+			.then(data => {
+				
+				alert('Bad values');
+
+				nameInput.value = data.name ? data.name : '';
+				passInput.value = data.pass ? data.pass : '';
+				emailInput.value = data.email ? data.email : '';
 			})
 		}
-
-		getSavedData();
 	</script>
 </body>
 </html>

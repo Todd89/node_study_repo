@@ -6,17 +6,17 @@ const dataVAlidation = (data) => {
 		email: false,
 	}
 
-	if (!data.name?.length) {
+	if (!data?.name?.length) {
 		typeOfFormError.isError = true;
 		typeOfFormError.name = true;
 	}
 
-	if (!data.pass?.length) {
+	if (!data?.pass?.length) {
 		typeOfFormError.isError = true;
 		typeOfFormError.pass = true;
 	}
 
-	if (!data.email?.length || !data.email.includes('@')) {
+	if (!data?.email?.length || !data.email.includes('@')) {
 		typeOfFormError.isError = true;
 		typeOfFormError.email = true;
 	}

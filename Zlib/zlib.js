@@ -1,16 +1,14 @@
 const zlib = require('zlib');
+const gzip = zlib.createGzip();
 const path = require('path');
 const { resolve } = path;
-
-// const { readdir } = require('fs');
-// const { promisify } = require('util')
-// const promisifyReaddir = promisify(readdir);
 
 const fs = require('fs');
 const { readdir } = require('fs').promises;
 const { stat } = require('fs').promises;
 
-const gzip = zlib.createGzip();
+const { TaskQueue } = require('./TaskQueue');
+const taskQueue = new TaskQueue();
 
 process.stdout.write("Please write absolute path to a folder:"+ "\n")
 process.stdin.resume();
@@ -19,15 +17,21 @@ const checkFileAndZipIt = (path) => {
 	const resultFilePath = `${path}.gz`;
 
 	fs.stat(resultFilePath, (err, stats) => {
-		console.log(resultFilePath);
 		if (err) {
-			console.log("Файл не найден");
-			const readStream = fs.createReadStream(path)
-			const writeStream = fs.createWriteStream(resultFilePath);
-		
-			readStream.pipe(gzip).pipe(writeStream);
+			const gzipTask = async () => {
+				return new Promise (res => {
+					const readStream = fs.createReadStream(path)
+					const writeStream = fs.createWriteStream(resultFilePath);
+
+					 readStream.pipe(gzip).pipe(writeStream);
+
+					 writeStream.on('finish', () => res());
+				})
+			}
+
+			taskQueue.addTask(gzipTask);
 		} else {
-			console.log("Файл найден");
+			console.log("Zip file was added");
 		}
 	})
 }
@@ -36,15 +40,18 @@ const checkItemsInFolderAndZipFiles = async (path) => {
 	const subItems = await readdir(path);
 
 	await Promise.all(subItems.map(async (subItem) => {
+		if(subItem.substring(subItem.length - 3) === '.gz')
+			return;
+
         const absolutePathToSubitem = resolve(path, subItem);
 
-        (await stat(absolutePathToSubitem)).isDirectory()
+       return (await stat(absolutePathToSubitem)).isDirectory()
 			? checkItemsInFolderAndZipFiles(absolutePathToSubitem)
 			: checkFileAndZipIt(absolutePathToSubitem);
     }));
 }
 
-process.stdin.on("data", argPath => {
+process.stdin.on("data", async argPath => {
 	const pathToFolders = argPath.toString().trim();
 
 	checkItemsInFolderAndZipFiles(pathToFolders);

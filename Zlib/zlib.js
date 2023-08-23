@@ -10,18 +10,26 @@ const fs = require('fs');
 const { readdir } = require('fs').promises;
 const { stat } = require('fs').promises;
 
-const gzip = zlib.gzip;
+const gzip = zlib.createGzip();
 
 process.stdout.write("Please write absolute path to a folder:"+ "\n")
 process.stdin.resume();
 
 const checkFileAndZipIt = (path) => {
 	const resultFilePath = `${path}.gz`;
-	
-	const readStream = fs.createReadStream(path)
-	const writeStream = fs.createWriteStream(resultFilePath);
 
-	readStream.pipe(gzip).pipe(writeStream);
+	fs.stat(resultFilePath, (err, stats) => {
+		console.log(resultFilePath);
+		if (err) {
+			console.log("Файл не найден");
+			const readStream = fs.createReadStream(path)
+			const writeStream = fs.createWriteStream(resultFilePath);
+		
+			readStream.pipe(gzip).pipe(writeStream);
+		} else {
+			console.log("Файл найден");
+		}
+	})
 }
 
 const checkItemsInFolderAndZipFiles = async (path) => {

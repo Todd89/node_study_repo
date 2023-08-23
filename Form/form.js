@@ -37,13 +37,15 @@ webserver.get('/page', (req, res) => {
 		return res.send(form)
 	}
 
-	const queryParams = new URLSearchParams();
+	// const queryParams = new URLSearchParams();
 
-	queryParams.append('name', name);
-	queryParams.append('pass', pass);
-	queryParams.append('email', email);
+	// queryParams.append('name', name);
+	// queryParams.append('pass', pass);
+	// queryParams.append('email', email);
 	
-	return res.redirect(302, '/dataPage?'+ queryParams)
+	// return res.redirect(302, '/dataPage?'+ queryParams);
+
+	return res.send(`<div>You registered like ${name}</div>`)
 })
 
 webserver.listen(port,()=>{

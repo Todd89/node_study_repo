@@ -20,7 +20,7 @@ const dataVAlidation = (data) => {
 		typeOfFormError.isError = true;
 		typeOfFormError.email = true;
 	}
-		
+
 	return typeOfFormError;
 }
 

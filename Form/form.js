@@ -12,14 +12,29 @@ webserver.use(express.json());
 
 const port = 7380;
 
-const pageWithData= path.join(__dirname, 'dataPage.html');
-
 webserver.get('/dataPage', (req, res) => {
-	res.sendFile(pageWithData)
+	const {name, pass, email} = req.query;
+
+	const dataPage = `<div>
+		<p>NAME:</p>
+		<div>${name}</div>
+		<p>PASS:</p>
+		<div>${pass}</div>
+		<p>EMAIL:</p>
+		<div>${email}</div>
+	</div>`
+
+	res.send(dataPage)
 })
 
 webserver.get('/page', (req, res) => {
-	const {name, pass, email} = req.query
+	const form = getForm();
+
+	return res.send(form);
+})
+
+webserver.post('/page', (req, res) => {
+	const {name, pass, email} = req.body;
 
 	const isQueryParams = !!name || !!pass || !!email;
 
@@ -29,7 +44,7 @@ webserver.get('/page', (req, res) => {
 		return res.send(form);
 	}
 
-	const typeOfFormError = dataVAlidation(req.query);
+	const typeOfFormError = dataVAlidation(req.body);
 
 	if (typeOfFormError.isError) {
 		const form =  getForm(typeOfFormError, name, pass, email);
@@ -37,15 +52,13 @@ webserver.get('/page', (req, res) => {
 		return res.send(form)
 	}
 
-	// const queryParams = new URLSearchParams();
+	const queryParams = new URLSearchParams();
 
-	// queryParams.append('name', name);
-	// queryParams.append('pass', pass);
-	// queryParams.append('email', email);
+	queryParams.append('name', name);
+	queryParams.append('pass', pass);
+	queryParams.append('email', email);
 	
-	// return res.redirect(302, '/dataPage?'+ queryParams);
-
-	return res.send(`<div>You registered like ${name}</div>`)
+	return res.redirect(302, '/dataPage?'+ queryParams);
 })
 
 webserver.listen(port,()=>{

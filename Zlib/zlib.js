@@ -55,4 +55,9 @@ process.stdin.on("data", async argPath => {
 	const pathToFolders = argPath.toString().trim();
 
 	checkItemsInFolderAndZipFiles(pathToFolders);
+
+	taskQueue.on('done', () => {
+		process.stdout.write("Zipping done")
+		process.exit(1);
+	});
 })

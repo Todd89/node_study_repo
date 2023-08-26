@@ -22,8 +22,9 @@ const checkFileAndZipIt = (path) => {
 				return new Promise (res => {
 					const readStream = fs.createReadStream(path)
 					const writeStream = fs.createWriteStream(resultFilePath);
+					
 
-					 readStream.pipe(gzip).pipe(writeStream);
+					 readStream.pipe(zlib.createGzip()).pipe(writeStream);
 
 					 writeStream.on('finish', () => res());
 				})

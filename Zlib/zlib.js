@@ -32,7 +32,29 @@ const checkFileAndZipIt = (path) => {
 
 			taskQueue.addTask(gzipTask);
 		} else {
-			console.log("Zip file was added");
+			const zipFileBirthData = stats.mtimeMs;
+
+			fs.stat(path, (err, stats) => {
+				const originalFileModifyData = stats.mtimeMs;
+
+				if (zipFileBirthData < originalFileModifyData) {
+					const gzipTask = async () => {
+						return new Promise (res => {
+							const readStream = fs.createReadStream(path)
+							const writeStream = fs.createWriteStream(resultFilePath);
+							
+		
+							 readStream.pipe(zlib.createGzip()).pipe(writeStream);
+		
+							 writeStream.on('finish', () => res());
+						})
+					}
+					console.log("New zip file will be added");
+
+					taskQueue.addTask(gzipTask);
+				} else
+				console.log("Zip file was added");
+			})
 		}
 	})
 }

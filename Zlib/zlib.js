@@ -1,11 +1,8 @@
 const zlib = require('zlib');
-const gzip = zlib.createGzip();
 const path = require('path');
 const { resolve } = path;
 
 const fs = require('fs');
-const { readdir } = require('fs').promises;
-const { stat } = require('fs').promises;
 
 const { TaskQueue } = require('./TaskQueue');
 const taskQueue = new TaskQueue();
@@ -13,65 +10,89 @@ const taskQueue = new TaskQueue();
 process.stdout.write("Please write absolute path to a folder:"+ "\n")
 process.stdin.resume();
 
+const listOfItems = [];
+
 const checkFileAndZipIt = (path) => {
 	const resultFilePath = `${path}.gz`;
 
-	fs.stat(resultFilePath, (err, stats) => {
-		if (err) {
+	try {
+		const stats = fs.statSync(resultFilePath);
+
+		const zipFileBirthData = stats.mtimeMs;
+
+		const existFileStats = fs.statSync(path);
+
+		const originalFileModifyData = existFileStats.mtimeMs;
+
+		if (zipFileBirthData < originalFileModifyData) {
 			const gzipTask = async () => {
 				return new Promise (res => {
 					const readStream = fs.createReadStream(path)
 					const writeStream = fs.createWriteStream(resultFilePath);
 					
 
-					 readStream.pipe(zlib.createGzip()).pipe(writeStream);
+					readStream.pipe(zlib.createGzip()).pipe(writeStream);
 
-					 writeStream.on('finish', () => res());
+					writeStream.on('finish', () => res());
 				})
 			}
 
-			taskQueue.addTask(gzipTask);
-		} else {
-			const zipFileBirthData = stats.mtimeMs;
+			process.stdout.write("New zip file will be added\n")
 
-			fs.stat(path, (err, stats) => {
-				const originalFileModifyData = stats.mtimeMs;
+			return taskQueue.addTask(gzipTask);
+		}
 
-				if (zipFileBirthData < originalFileModifyData) {
-					const gzipTask = async () => {
-						return new Promise (res => {
-							const readStream = fs.createReadStream(path)
-							const writeStream = fs.createWriteStream(resultFilePath);
-							
-		
-							 readStream.pipe(zlib.createGzip()).pipe(writeStream);
-		
-							 writeStream.on('finish', () => res());
-						})
-					}
-					console.log("New zip file will be added");
+		process.stdout.write("Zip file was added\n")
+	} catch (err) {
+		const gzipTask = async () => {
+			return new Promise (res => {
+				const readStream = fs.createReadStream(path)
+				const writeStream = fs.createWriteStream(resultFilePath);
+				
 
-					taskQueue.addTask(gzipTask);
-				} else
-				console.log("Zip file was added");
+				 readStream.pipe(zlib.createGzip()).pipe(writeStream);
+
+				 writeStream.on('finish', () => res());
 			})
 		}
-	})
+
+		return taskQueue.addTask(gzipTask);
+	}
 }
 
-const checkItemsInFolderAndZipFiles = async (path) => {
-	const subItems = await readdir(path);
+const getItems = (path) => {
+	const subItems = fs.readdirSync(path)
 
-	await Promise.all(subItems.map(async (subItem) => {
-		if(subItem.substring(subItem.length - 3) === '.gz')
-			return;
+	subItems.forEach((itemPath) => {
+		const absolutePathToSubitem = resolve(path, itemPath);
 
-        const absolutePathToSubitem = resolve(path, subItem);
+		const itemStat = fs.statSync(absolutePathToSubitem);
 
-       return (await stat(absolutePathToSubitem)).isDirectory()
-			? checkItemsInFolderAndZipFiles(absolutePathToSubitem)
-			: checkFileAndZipIt(absolutePathToSubitem);
-    }));
+		if(itemStat.isDirectory())
+			return getItems(absolutePathToSubitem);
+	
+		if(itemPath.substring(itemPath.length - 3) !== '.gz')
+			listOfItems.push(absolutePathToSubitem);
+	});
+}
+
+const checkItemsInFolderAndZipFiles = (path) => {
+	getItems(path);
+
+	listOfItems.forEach((itemPath, index) => {
+		const itemStat = fs.statSync(itemPath);
+
+		if(!itemStat.isDirectory())
+			checkFileAndZipIt(itemPath);
+
+		const isLastHandledItemAndNoTasks = index === listOfItems.length - 1
+			&& !taskQueue.tasksQueue.length && !taskQueue.tasksRunPull.length;
+
+		if(isLastHandledItemAndNoTasks) {
+			process.stdout.write("Zipping done")
+			process.exit(1);
+		}
+	})
 }
 
 process.stdin.on("data", async argPath => {

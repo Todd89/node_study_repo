@@ -36,6 +36,7 @@ const storageConfig = multer.diskStorage({
 const fileUpload = multer({storage:storageConfig}).single('file'); 
 
 let clients = [];
+let timer = 0;
 
 const getUploadsData = () => {
 	return JSON.parse(
@@ -162,8 +163,6 @@ webSocketServer.on('connection', connection => {
 		}
 	})
 });
-
-let timer = 0;
 
 setInterval(()=>{
     timer++;

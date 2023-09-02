@@ -46,6 +46,8 @@ webserver.get('/stats', (req, res) => {
 })
 
 webserver.get('/page', (req, res) => {
+
+	
 	res.sendFile(pageWithVotesButtonsPath)
 })
 
